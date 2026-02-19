@@ -1,22 +1,20 @@
 package com.db.weather_app.dto;
 
 import com.db.weather_app.enums.Tempo;
-import jakarta.validation.constraints.*;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.PositiveOrZero;
 
 import java.time.LocalDate;
 
-public record RegistroClimaRequest(
+public record AtualizarClimaRequest(
 
-        @NotBlank
         String nomeCidade,
 
-        @NotNull
         LocalDate data,
 
-        @NotNull
         Tempo tempoDia,
 
-        @NotNull
         Tempo tempoNoite,
 
         @Min(-100)
@@ -36,5 +34,5 @@ public record RegistroClimaRequest(
 
         @PositiveOrZero
         Double velocidadeVento
-    ) {
+) {
 }

@@ -1,6 +1,7 @@
 package com.db.weather_app.service;
 
-import com.db.weather_app.dto.RegistroClimaRequest;
+import com.db.weather_app.dto.AtualizarClimaRequest;
+import com.db.weather_app.dto.CriarClimaRequest;
 import com.db.weather_app.entity.Clima;
 import com.db.weather_app.repository.ClimaRepository;
 import lombok.AllArgsConstructor;
@@ -15,7 +16,7 @@ public class ClimaService {
 
     private final ClimaRepository repository;
 
-    public Clima toEntity(RegistroClimaRequest request) {
+    public Clima toEntity(CriarClimaRequest request) {
         return repository.save(Clima.builder()
                 .nomeCidade(request.nomeCidade())
                 .data(request.data())
@@ -56,10 +57,57 @@ public class ClimaService {
                 .orElseThrow(() -> new RuntimeException("Previsão do dia não encontrada"));
     }
 
-    public List<Clima> buscarPrevisaoDosProximosSeteDiasPorCidade(String nomeCidade, int dias) {
+    public List<Clima> buscarPrevisaoProximosSeteDiasPorCidade(String nomeCidade, int dias) {
         var hoje = LocalDate.now();
         var dataFim = hoje.plusDays(dias);
 
         return repository.findByCidadeAndDataBetween(nomeCidade, hoje, dataFim);
+    }
+
+    public Clima editarClima(Long id, AtualizarClimaRequest request) {
+        Clima clima = repository.findById(id).orElseThrow(() -> new RuntimeException("Clima não encontrado"));
+
+        if (request.nomeCidade() != null) {
+            clima.setNomeCidade(request.nomeCidade());
+        }
+
+        if (request.data() != null) {
+            clima.setData(request.data());
+        }
+
+        if (request.tempoDia() != null) {
+            clima.setTempoDia(request.tempoDia());
+        }
+
+        if (request.tempoNoite() != null) {
+            clima.setTempoNoite(request.tempoNoite());
+        }
+
+        if (request.temperaturaMax() != null) {
+            clima.setTemperaturaMax(request.temperaturaMax());
+        }
+
+        if (request.temperaturaMin() != null) {
+            clima.setTemperaturaMin(request.temperaturaMin());
+        }
+
+        if (request.precipitacao() != null) {
+            clima.setPrecipitacao(request.precipitacao());
+        }
+
+        if (request.humidade() != null) {
+            clima.setHumidade(request.humidade());
+        }
+
+        if (request.velocidadeVento() != null) {
+            clima.setVelocidadeVento(request.velocidadeVento());
+        }
+
+        return repository.save(clima);
+    }
+
+    public void deletarClima(Long id) {
+        Clima clima = buscarClimaPorId(id);
+        repository.delete(clima);
     }
 }

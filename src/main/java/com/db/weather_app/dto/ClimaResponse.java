@@ -4,7 +4,7 @@ import com.db.weather_app.enums.Tempo;
 
 import java.time.LocalDate;
 
-public record RegistroClimaResponse(
+public record ClimaResponse(
 
         Long id,
 
@@ -24,5 +24,6 @@ public record RegistroClimaResponse(
 
         Integer humidade,
 
-        Double velocidadeVento) {
+        Double velocidadeVento
+) {
 }

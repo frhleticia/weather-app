@@ -4,6 +4,6 @@ public enum Tempo {
     SOL,
     NUBLADO,
     CHUVA,
-    TEMPESTADE,
-    NEBLINA
+    NEVE,
+    TEMPESTADE
 }

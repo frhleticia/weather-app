@@ -1,6 +1,7 @@
 package com.db.weather_app.service;
 
 import com.db.weather_app.dto.AtualizarClimaRequest;
+import com.db.weather_app.dto.ClimaResponse;
 import com.db.weather_app.dto.CriarClimaRequest;
 import com.db.weather_app.entity.Clima;
 import com.db.weather_app.repository.ClimaRepository;
@@ -28,6 +29,21 @@ public class ClimaService {
                 .humidade(request.humidade())
                 .velocidadeVento(request.velocidadeVento())
                 .build());
+    }
+
+    public ClimaResponse toResponse(Clima clima) {
+        return new ClimaResponse(
+                clima.getId(),
+                clima.getNomeCidade(),
+                clima.getData(),
+                clima.getTempoDia(),
+                clima.getTempoNoite(),
+                clima.getTemperaturaMax(),
+                clima.getTemperaturaMin(),
+                clima.getPrecipitacao(),
+                clima.getHumidade(),
+                clima.getVelocidadeVento()
+        );
     }
 
     public List<Clima> listarClimas() {
@@ -64,7 +80,7 @@ public class ClimaService {
         return repository.findByCidadeAndDataBetween(nomeCidade, hoje, dataFim);
     }
 
-    public Clima editarClima(Long id, AtualizarClimaRequest request) {
+    public void editarClima(Long id, AtualizarClimaRequest request) {
         Clima clima = repository.findById(id).orElseThrow(() -> new RuntimeException("Clima não encontrado"));
 
         if (request.nomeCidade() != null) {
@@ -103,7 +119,7 @@ public class ClimaService {
             clima.setVelocidadeVento(request.velocidadeVento());
         }
 
-        return repository.save(clima);
+        repository.save(clima);
     }
 
     public void deletarClima(Long id) {

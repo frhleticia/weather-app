@@ -11,17 +11,17 @@ import java.util.Optional;
 @Repository
 public interface ClimaRepository extends JpaRepository<Clima, Long> {
 
-    List<Clima> findByCidadeAndDataAfter(
+    List<Clima> findByNomeCidadeAndDataAfter(
             String nomeCidade,
             LocalDate data
     );
 
-    Optional<Clima> findByCidadeAndData(
+    Optional<Clima> findByNomeCidadeAndData(
             String nomeCidade,
             LocalDate data
     );
 
-    List<Clima> findByCidadeAndDataBetween(
+    List<Clima> findByNomeCidadeAndDataBetween(
             String nomeCidade,
             LocalDate dataInicio,
             LocalDate dataFim

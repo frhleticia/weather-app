@@ -17,8 +17,8 @@ public class ClimaService {
 
     private final ClimaRepository repository;
 
-    public Clima toEntity(CriarClimaRequest request) {
-        return repository.save(Clima.builder()
+    private Clima toEntity(CriarClimaRequest request) {
+        return Clima.builder()
                 .nomeCidade(request.nomeCidade())
                 .data(request.data())
                 .tempoDia(request.tempoDia())
@@ -28,10 +28,10 @@ public class ClimaService {
                 .precipitacao(request.precipitacao())
                 .humidade(request.humidade())
                 .velocidadeVento(request.velocidadeVento())
-                .build());
+                .build();
     }
 
-    public ClimaResponse toResponse(Clima clima) {
+    private ClimaResponse toResponse(Clima clima) {
         return new ClimaResponse(
                 clima.getId(),
                 clima.getNomeCidade(),
@@ -46,41 +46,53 @@ public class ClimaService {
         );
     }
 
-    public List<Clima> listarClimas() {
+    public ClimaResponse criarClima(CriarClimaRequest request) {
+        Clima clima = toEntity(request);
+        return toResponse(repository.save(clima));
+    }
+
+    public List<ClimaResponse> listarClimas() {
         List<Clima> climas = repository.findByDataGreaterThanEqual(LocalDate.now());
 
         if (climas.isEmpty()) {
             throw new RuntimeException("Nenhum clima encontrado");
         }
 
-        return climas;
+        return climas.stream().map(this::toResponse).toList();
     }
 
-    public Clima buscarClimaPorId(Long id) {
-        return repository.findById(id)
+    public ClimaResponse buscarClimaPorId(Long id) {
+        Clima clima = repository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Clima não encontrado"));
+
+        return toResponse(clima);
     }
 
-    public List<Clima> buscarClimasPorCidade(String nomeCidade) {
+    public List<ClimaResponse> buscarClimasPorCidade(String nomeCidade) {
         var hoje = LocalDate.now();
-        return repository.findByCidadeAndDataAfter(nomeCidade, hoje);
+        List<Clima> climas = repository.findByNomeCidadeAndDataAfter(nomeCidade, hoje);
+
+        return climas.stream().map(this::toResponse).toList();
     }
 
-    public Clima buscarPrevisaoDoDiaPorCidade(String nomeCidade) {
+    public ClimaResponse buscarPrevisaoDoDiaPorCidade(String nomeCidade) {
         var hoje = LocalDate.now();
-
-        return repository.findByCidadeAndData(nomeCidade, hoje)
+        Clima clima = repository.findByNomeCidadeAndData(nomeCidade, hoje)
                 .orElseThrow(() -> new RuntimeException("Previsão do dia não encontrada"));
+
+        return toResponse(clima);
     }
 
-    public List<Clima> buscarPrevisaoProximosSeteDiasPorCidade(String nomeCidade, int dias) {
+    public List<ClimaResponse> buscarPrevisaoProximosSeteDiasPorCidade(String nomeCidade, int dias) {
         var hoje = LocalDate.now();
         var dataFim = hoje.plusDays(dias);
 
-        return repository.findByCidadeAndDataBetween(nomeCidade, hoje, dataFim);
+        List<Clima> climas = repository.findByNomeCidadeAndDataBetween(nomeCidade, hoje, dataFim);
+
+        return climas.stream().map(this::toResponse).toList();
     }
 
-    public void editarClima(Long id, AtualizarClimaRequest request) {
+    public ClimaResponse editarClima(Long id, AtualizarClimaRequest request) {
         Clima clima = repository.findById(id).orElseThrow(() -> new RuntimeException("Clima não encontrado"));
 
         if (request.nomeCidade() != null) {
@@ -119,11 +131,13 @@ public class ClimaService {
             clima.setVelocidadeVento(request.velocidadeVento());
         }
 
-        repository.save(clima);
+        return toResponse(repository.save(clima));
     }
 
     public void deletarClima(Long id) {
-        Clima clima = buscarClimaPorId(id);
+        Clima clima = repository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Clima não encontrado"));
+
         repository.delete(clima);
     }
 }

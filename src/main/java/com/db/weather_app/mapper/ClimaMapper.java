@@ -5,6 +5,8 @@ import com.db.weather_app.dto.ClimaResponse;
 import com.db.weather_app.dto.CriarClimaRequest;
 import com.db.weather_app.entity.Clima;
 
+import java.util.List;
+
 public class ClimaMapper {
 
     public static Clima toEntity(CriarClimaRequest request) {
@@ -73,5 +75,11 @@ public class ClimaMapper {
         if (request.velocidadeVento() != null) {
             clima.setVelocidadeVento(request.velocidadeVento());
         }
+    }
+
+    public static List<ClimaResponse> toResponseList(List<Clima> climas) {
+        return climas.stream()
+                .map(ClimaMapper::toResponse)
+                .toList();
     }
 }

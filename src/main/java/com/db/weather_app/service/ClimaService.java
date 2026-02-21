@@ -33,7 +33,7 @@ public class ClimaService {
             throw new ClimaNotFoundException("Nenhum clima encontrado");
         }
 
-        return climas.stream().map(ClimaMapper::toResponse).toList();
+        return ClimaMapper.toResponseList(climas);
     }
 
     public ClimaResponse buscarClimaPorId(Long id) {
@@ -47,7 +47,7 @@ public class ClimaService {
         var hoje = LocalDate.now();
         List<Clima> climas = repository.findByNomeCidadeAndDataAfter(nomeCidade, hoje);
 
-        return climas.stream().map(ClimaMapper::toResponse).toList();
+        return ClimaMapper.toResponseList(climas);
     }
 
     public ClimaResponse buscarPrevisaoDoDiaPorCidade(String nomeCidade) {
@@ -64,7 +64,7 @@ public class ClimaService {
 
         List<Clima> climas = repository.findByNomeCidadeAndDataBetween(nomeCidade, hoje, dataFim);
 
-        return climas.stream().map(ClimaMapper::toResponse).toList();
+        return ClimaMapper.toResponseList(climas);
     }
 
     public ClimaResponse atualizarClima(Long id, AtualizarClimaRequest request) {

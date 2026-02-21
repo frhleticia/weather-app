@@ -1,6 +1,8 @@
 package com.db.weather_app.repository;
 
 import com.db.weather_app.entity.Clima;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -11,9 +13,10 @@ import java.util.Optional;
 @Repository
 public interface ClimaRepository extends JpaRepository<Clima, Long> {
 
-    List<Clima> findByNomeCidadeAndDataAfter(
+    Page<Clima> findByNomeCidadeAndDataAfter(
             String nomeCidade,
-            LocalDate data
+            LocalDate data,
+            Pageable pageable
     );
 
     Optional<Clima> findByNomeCidadeAndData(
@@ -27,5 +30,5 @@ public interface ClimaRepository extends JpaRepository<Clima, Long> {
             LocalDate dataFim
     );
 
-    List<Clima> findByDataGreaterThanEqual(LocalDate data);
+    Page<Clima> findByDataGreaterThanEqual(LocalDate data, Pageable pageable);
 }

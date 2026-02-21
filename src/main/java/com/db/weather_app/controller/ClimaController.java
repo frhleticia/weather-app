@@ -6,6 +6,9 @@ import com.db.weather_app.dto.CriarClimaRequest;
 import com.db.weather_app.service.ClimaService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -37,9 +40,10 @@ public class ClimaController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ClimaResponse>> listarClimas() {
+    public ResponseEntity<Page<ClimaResponse>> listarClimas(
+            @PageableDefault(size = 6) Pageable pageable) {
 
-        return ResponseEntity.ok(service.listarClimas());
+        return ResponseEntity.ok(service.listarClimas(pageable));
     }
 
     @GetMapping("/{id}")
@@ -50,10 +54,11 @@ public class ClimaController {
     }
 
     @GetMapping("/cidade/{nomeCidade}")
-    public ResponseEntity<List<ClimaResponse>> listarClimasPorCidade(
-            @RequestParam String nomeCidade) {
+    public ResponseEntity<Page<ClimaResponse>> listarClimasPorCidade(
+            @PathVariable String nomeCidade,
+            @PageableDefault(size = 8) Pageable pageable) {
 
-        return ResponseEntity.ok(service.buscarClimasPorCidade(nomeCidade));
+        return ResponseEntity.ok(service.buscarClimasPorCidade(nomeCidade, pageable));
     }
 
     @GetMapping("/cidade/{nomeCidade}/previsao-dia")
@@ -65,7 +70,7 @@ public class ClimaController {
 
     @GetMapping("/cidade/{nomeCidade}/previsao-semana")
     public ResponseEntity<List<ClimaResponse>> buscarPrevisaoProximosSeteDiasPorCidade(
-            @RequestParam String nomeCidade,
+            @PathVariable String nomeCidade,
             @RequestParam int dia
     ) {
         return ResponseEntity.ok(service.buscarPrevisaoProximosSeteDiasPorCidade(nomeCidade, dia));

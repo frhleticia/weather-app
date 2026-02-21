@@ -8,6 +8,8 @@ import com.db.weather_app.entity.Clima;
 import com.db.weather_app.exceptions.ClimaNotFoundException;
 import com.db.weather_app.repository.ClimaRepository;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -26,14 +28,14 @@ public class ClimaService {
         return ClimaMapper.toResponse(climaSalvo);
     }
 
-    public List<ClimaResponse> listarClimas() {
-        List<Clima> climas = repository.findByDataGreaterThanEqual(LocalDate.now());
+    public Page<ClimaResponse> listarClimas(Pageable pageable) {
+        Page<Clima> climasPage = repository.findByDataGreaterThanEqual(LocalDate.now(), pageable);
 
-        if (climas.isEmpty()) {
+        if (climasPage.isEmpty()) {
             throw new ClimaNotFoundException("Nenhum clima encontrado");
         }
 
-        return ClimaMapper.toResponseList(climas);
+        return climasPage.map(ClimaMapper::toResponse);
     }
 
     public ClimaResponse buscarClimaPorId(Long id) {
@@ -43,11 +45,11 @@ public class ClimaService {
         return ClimaMapper.toResponse(clima);
     }
 
-    public List<ClimaResponse> buscarClimasPorCidade(String nomeCidade) {
+    public Page<ClimaResponse> buscarClimasPorCidade(String nomeCidade, Pageable pageable) {
         var hoje = LocalDate.now();
-        List<Clima> climas = repository.findByNomeCidadeAndDataAfter(nomeCidade, hoje);
+        Page<Clima> climasPage = repository.findByNomeCidadeAndDataAfter(nomeCidade, hoje, pageable);
 
-        return ClimaMapper.toResponseList(climas);
+        return climasPage.map(ClimaMapper::toResponse);
     }
 
     public ClimaResponse buscarPrevisaoDoDiaPorCidade(String nomeCidade) {

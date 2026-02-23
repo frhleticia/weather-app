@@ -8,6 +8,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -41,7 +42,12 @@ public class ClimaController {
 
     @GetMapping
     public ResponseEntity<Page<ClimaResponse>> listarClimas(
-            @PageableDefault(size = 6) Pageable pageable) {
+            @PageableDefault(
+                    size = 8,
+                    sort = "data",
+                    direction = Sort.Direction.DESC
+            )
+            Pageable pageable) {
 
         return ResponseEntity.ok(service.listarClimas(pageable));
     }
@@ -56,7 +62,12 @@ public class ClimaController {
     @GetMapping("/cidade/{nomeCidade}")
     public ResponseEntity<Page<ClimaResponse>> listarClimasPorCidade(
             @PathVariable String nomeCidade,
-            @PageableDefault(size = 8) Pageable pageable) {
+            @PageableDefault(
+                    size = 8,
+                    sort = "data",
+                    direction = Sort.Direction.DESC
+            )
+            Pageable pageable) {
 
         return ResponseEntity.ok(service.buscarClimasPorCidade(nomeCidade, pageable));
     }

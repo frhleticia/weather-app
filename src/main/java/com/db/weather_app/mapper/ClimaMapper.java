@@ -4,12 +4,14 @@ import com.db.weather_app.dto.AtualizarClimaRequest;
 import com.db.weather_app.dto.ClimaResponse;
 import com.db.weather_app.dto.CriarClimaRequest;
 import com.db.weather_app.entity.Clima;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 
+@Component
 public class ClimaMapper {
 
-    public static Clima toEntity(CriarClimaRequest request) {
+    public Clima toEntity(CriarClimaRequest request) {
         return Clima.builder()
                 .nomeCidade(request.nomeCidade())
                 .data(request.data())
@@ -23,7 +25,7 @@ public class ClimaMapper {
                 .build();
     }
 
-    public static ClimaResponse toResponse(Clima clima) {
+    public ClimaResponse toResponse(Clima clima) {
         return new ClimaResponse(
                 clima.getId(),
                 clima.getNomeCidade(),
@@ -38,7 +40,7 @@ public class ClimaMapper {
         );
     }
 
-    public static void updateEntity(Clima clima, AtualizarClimaRequest request) {
+    public void updateEntity(Clima clima, AtualizarClimaRequest request) {
 
         if (request.nomeCidade() != null) {
             clima.setNomeCidade(request.nomeCidade());
@@ -77,9 +79,9 @@ public class ClimaMapper {
         }
     }
 
-    public static List<ClimaResponse> toResponseList(List<Clima> climas) {
+    public List<ClimaResponse> toResponseList(List<Clima> climas) {
         return climas.stream()
-                .map(ClimaMapper::toResponse)
+                .map(this::toResponse)
                 .toList();
     }
 }

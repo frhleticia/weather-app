@@ -21,11 +21,13 @@ public class ClimaService {
 
     private final ClimaRepository repository;
 
+    private final ClimaMapper mapper;
+
     public ClimaResponse criarClima(CriarClimaRequest request) {
-        Clima clima = ClimaMapper.toEntity(request);
+        Clima clima = mapper.toEntity(request);
         Clima climaSalvo = repository.save(clima);
 
-        return ClimaMapper.toResponse(climaSalvo);
+        return mapper.toResponse(climaSalvo);
     }
 
     public Page<ClimaResponse> listarClimas(Pageable pageable) {
@@ -35,21 +37,21 @@ public class ClimaService {
             throw new ClimaNotFoundException("Nenhum clima encontrado");
         }
 
-        return climasPage.map(ClimaMapper::toResponse);
+        return climasPage.map(mapper::toResponse);
     }
 
     public ClimaResponse buscarClimaPorId(Long id) {
         Clima clima = repository.findById(id)
                 .orElseThrow(ClimaNotFoundException::new);
 
-        return ClimaMapper.toResponse(clima);
+        return mapper.toResponse(clima);
     }
 
     public Page<ClimaResponse> buscarClimasPorCidade(String nomeCidade, Pageable pageable) {
         var hoje = LocalDate.now();
         Page<Clima> climasPage = repository.findByNomeCidadeAndDataAfter(nomeCidade, hoje, pageable);
 
-        return climasPage.map(ClimaMapper::toResponse);
+        return climasPage.map(mapper::toResponse);
     }
 
     public ClimaResponse buscarPrevisaoDoDiaPorCidade(String nomeCidade) {
@@ -57,7 +59,7 @@ public class ClimaService {
         Clima clima = repository.findByNomeCidadeAndData(nomeCidade, hoje)
                 .orElseThrow(() -> new ClimaNotFoundException("Previsão do dia não encontrada"));
 
-        return ClimaMapper.toResponse(clima);
+        return mapper.toResponse(clima);
     }
 
     public List<ClimaResponse> buscarPrevisaoProximosSeteDiasPorCidade(String nomeCidade, int dias) {
@@ -66,17 +68,17 @@ public class ClimaService {
 
         List<Clima> climas = repository.findByNomeCidadeAndDataBetween(nomeCidade, hoje, dataFim);
 
-        return ClimaMapper.toResponseList(climas);
+        return mapper.toResponseList(climas);
     }
 
     public ClimaResponse atualizarClima(Long id, AtualizarClimaRequest request) {
         Clima clima = repository.findById(id)
                 .orElseThrow(ClimaNotFoundException::new);
 
-        ClimaMapper.updateEntity(clima, request);
+        mapper.updateEntity(clima, request);
         Clima atualizado = repository.save(clima);
 
-        return ClimaMapper.toResponse(atualizado);
+        return mapper.toResponse(atualizado);
     }
 
     public void deletarClima(Long id) {

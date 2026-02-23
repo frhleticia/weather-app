@@ -63,7 +63,7 @@ public class ClimaController {
     public ResponseEntity<Page<ClimaResponse>> listarClimasPorCidade(
             @PathVariable String nomeCidade,
             @PageableDefault(
-                    size = 8,
+                    size = 6,
                     sort = "data",
                     direction = Sort.Direction.DESC
             )

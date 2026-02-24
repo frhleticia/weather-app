@@ -13,7 +13,7 @@ import java.util.Optional;
 @Repository
 public interface ClimaRepository extends JpaRepository<Clima, Long> {
 
-    Page<Clima> findByNomeCidadeAndDataAfter(
+    Page<Clima> findByNomeCidadeAndDataGreaterThanEqual(
             String nomeCidade,
             LocalDate data,
             Pageable pageable

@@ -39,7 +39,7 @@ public class ClimaRepositoryIT {
 
         var pageable = PageRequest.of(0, 6);
 
-        Page<Clima> page = repository.findByNomeCidadeAndDataAfter(
+        Page<Clima> page = repository.findByNomeCidadeAndDataGreaterThanEqual(
                 "Porto Alegre", LocalDate.of(2026, 2, 19), pageable);
 
         assertEquals(1, page.getTotalElements());
@@ -64,7 +64,7 @@ public class ClimaRepositoryIT {
 
         var pageable = PageRequest.of(0, 6);
 
-        Page<Clima> page = repository.findByNomeCidadeAndDataAfter(
+        Page<Clima> page = repository.findByNomeCidadeAndDataGreaterThanEqual(
                 "Porto Alegre", LocalDate.of(2026, 2, 21), pageable);
 
         assertTrue(page.isEmpty());

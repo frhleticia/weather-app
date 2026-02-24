@@ -7,10 +7,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 @RestControllerAdvice
-public class RestExceptionHandler extends ResponseEntityExceptionHandler {
+public class RestExceptionHandler {
 
     @ExceptionHandler(ClimaNotFoundException.class)
     public ResponseEntity<String> climaNotFoundHandler(ClimaNotFoundException ex) {
@@ -21,6 +20,7 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
     public ResponseEntity<String> dataIntegrityViolationHandler(DataIntegrityViolationException ex) {
         return ResponseEntity.status(HttpStatus.CONFLICT).body("Já existe um registro cadastrado para essa cidade nessa data");
     }
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<String> validationExceptionHandler(MethodArgumentNotValidException ex) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Dados inválidos");

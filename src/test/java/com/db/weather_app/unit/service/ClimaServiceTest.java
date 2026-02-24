@@ -14,6 +14,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -87,6 +88,32 @@ public class ClimaServiceTest {
     }
 
     @Test
+    void deveLancarExcecaoQuandoRegistrarClimaDuplicado() {
+        var request = new CriarClimaRequest(
+                "Porto Alegre",
+                LocalDate.of(2026, 2, 20),
+                Tempo.SOL,
+                Tempo.NUBLADO,
+                30,
+                20,
+                5.0,
+                70,
+                10.0
+        );
+
+        Clima climaExistente = criarClimaCompleto();
+
+        when(repository.findByNomeCidadeAndData(eq("Porto Alegre"), any()))
+                .thenReturn(Optional.of(climaExistente));
+
+        assertThrows(DataIntegrityViolationException.class,
+                () -> service.criarClima(request)
+        );
+
+        verify(repository).findByNomeCidadeAndData(eq("Porto Alegre"), any());
+    }
+
+    @Test
     void deveListarClimasQuandoExistiremRegistros() {
         Pageable pageable = PageRequest.of(0, 8);
 
@@ -153,7 +180,7 @@ public class ClimaServiceTest {
         Clima clima = criarClimaCompleto();
         Page<Clima> page = new PageImpl<>(List.of(clima));
 
-        when(repository.findByNomeCidadeAndDataAfter(eq("Porto Alegre"), any(), eq(pageable)))
+        when(repository.findByNomeCidadeAndDataGreaterThanEqual(eq("Porto Alegre"), any(), eq(pageable)))
                 .thenReturn(page);
 
         Page<ClimaResponse> resultado = service.buscarClimasPorCidade("Porto Alegre", pageable);
@@ -162,7 +189,7 @@ public class ClimaServiceTest {
         assertEquals(1, resultado.getTotalElements());
         assertEquals("Porto Alegre", resultado.getContent().getFirst().nomeCidade());
 
-        verify(repository).findByNomeCidadeAndDataAfter(eq("Porto Alegre"), any(), eq(pageable));
+        verify(repository).findByNomeCidadeAndDataGreaterThanEqual(eq("Porto Alegre"), any(), eq(pageable));
     }
 
     @Test

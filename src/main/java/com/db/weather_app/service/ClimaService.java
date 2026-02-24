@@ -8,6 +8,7 @@ import com.db.weather_app.entity.Clima;
 import com.db.weather_app.exceptions.ClimaNotFoundException;
 import com.db.weather_app.repository.ClimaRepository;
 import lombok.AllArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -24,6 +25,12 @@ public class ClimaService {
     private final ClimaMapper mapper;
 
     public ClimaResponse criarClima(CriarClimaRequest request) {
+        boolean jaExiste = repository.findByNomeCidadeAndData(request.nomeCidade(), request.data()).isPresent();
+
+        if (jaExiste) {
+            throw new DataIntegrityViolationException("Já existe um clima cadastrado para essa cidade nessa data");
+        }
+
         Clima clima = mapper.toEntity(request);
         Clima climaSalvo = repository.save(clima);
 
@@ -49,7 +56,7 @@ public class ClimaService {
 
     public Page<ClimaResponse> buscarClimasPorCidade(String nomeCidade, Pageable pageable) {
         var hoje = LocalDate.now();
-        Page<Clima> climasPage = repository.findByNomeCidadeAndDataAfter(nomeCidade, hoje, pageable);
+        Page<Clima> climasPage = repository.findByNomeCidadeAndDataGreaterThanEqual(nomeCidade, hoje, pageable);
 
         return climasPage.map(mapper::toResponse);
     }

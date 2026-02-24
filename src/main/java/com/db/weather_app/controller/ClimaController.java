@@ -79,7 +79,7 @@ public class ClimaController {
         return ResponseEntity.ok(service.buscarPrevisaoDoDiaPorCidade(nomeCidade));
     }
 
-    @GetMapping("/cidade/{nomeCidade}/previsao-semana")
+    @GetMapping("/cidade/{nomeCidade}/previsao-proximos-dias")
     public ResponseEntity<List<ClimaResponse>> buscarPrevisaoProximosSeteDiasPorCidade(
             @PathVariable String nomeCidade,
             @RequestParam int dia

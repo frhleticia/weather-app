@@ -24,8 +24,8 @@ public class ClimaController {
     private final ClimaService service;
 
     @PostMapping
-    public ResponseEntity<ClimaResponse> cadastrar(
-            @Valid @RequestBody CriarClimaRequest request) {
+    public ResponseEntity<ClimaResponse> criarClima(
+            @RequestBody @Valid CriarClimaRequest request) {
 
         return ResponseEntity
                 .status(HttpStatus.CREATED)
@@ -33,17 +33,16 @@ public class ClimaController {
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<ClimaResponse> atualizar(
+    public ResponseEntity<ClimaResponse> atualizarClima(
             @PathVariable Long id,
-            @Valid @RequestBody AtualizarClimaRequest request) {
+             @RequestBody @Valid AtualizarClimaRequest request) {
 
         return ResponseEntity.ok(service.atualizarClima(id, request));
     }
 
     @GetMapping
-    public ResponseEntity<Page<ClimaResponse>> listar(
+    public ResponseEntity<Page<ClimaResponse>> listarClimas(
             @PageableDefault(
-                    size = 10,
                     sort = "data",
                     direction = Sort.Direction.DESC
             )
@@ -63,7 +62,6 @@ public class ClimaController {
     public ResponseEntity<Page<ClimaResponse>> listarClimasPorCidade(
             @PathVariable String nomeCidade,
             @PageableDefault(
-                    size = 10,
                     sort = "data",
                     direction = Sort.Direction.DESC
             )

@@ -1,5 +1,6 @@
 package com.db.weather_app.service;
 
+import com.db.weather_app.exceptions.DuplicidadeClimaException;
 import com.db.weather_app.mapper.ClimaMapper;
 import com.db.weather_app.dto.AtualizarClimaRequest;
 import com.db.weather_app.dto.ClimaResponse;
@@ -28,7 +29,7 @@ public class ClimaService {
         boolean jaExiste = repository.findByNomeCidadeAndData(request.nomeCidade(), request.data()).isPresent();
 
         if (jaExiste) {
-            throw new DataIntegrityViolationException("Já existe um clima cadastrado para essa cidade nessa data");
+            throw new DuplicidadeClimaException();
         }
 
         Clima clima = mapper.toEntity(request);

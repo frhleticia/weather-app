@@ -5,6 +5,8 @@ import com.db.weather_app.dto.AtualizarClimaRequest;
 import com.db.weather_app.dto.ClimaResponse;
 import com.db.weather_app.dto.CriarClimaRequest;
 import com.db.weather_app.enums.Tempo;
+import com.db.weather_app.exceptions.ClimaNotFoundException;
+import com.db.weather_app.exceptions.DuplicidadeClimaException;
 import com.db.weather_app.service.ClimaService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -18,6 +20,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import java.time.LocalDate;
 import java.util.List;
 
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -273,22 +276,24 @@ public class ClimaControllerTest {
 
     @Test
     void deveRetornarNotFoundQuandoClimaNaoExistir() {
-        when(service.buscarClimaPorId(999L)).thenThrow(new RuntimeException("Clima não encontrado"));
+        when(service.buscarClimaPorId(999L)).thenThrow(new ClimaNotFoundException("Clima não encontrado"));
 
-        RuntimeException exception = assertThrows(RuntimeException.class, () -> controller.buscarClimaPorId(999L));
+        assertThatThrownBy(() -> controller.buscarClimaPorId(999L))
+                .isInstanceOf(ClimaNotFoundException.class)
+                .hasMessage("Clima não encontrado");
 
-        assertEquals("Clima não encontrado", exception.getMessage());
         verify(service).buscarClimaPorId(999L);
     }
 
     @Test
     void deveRetornarNotFoundQuandoBuscarPrevisaoDoDiaPorCidadeInexistente() {
         when(service.buscarPrevisaoDoDiaPorCidade("Cidade Inexistente"))
-                .thenThrow(new RuntimeException("Previsão do dia não encontrada"));
+                .thenThrow(new ClimaNotFoundException("Previsão do dia não encontrada"));
 
-        RuntimeException exception = assertThrows(RuntimeException.class, () -> controller.buscarPrevisaoDoDiaPorCidade("Cidade Inexistente"));
+        assertThatThrownBy(() -> controller.buscarPrevisaoDoDiaPorCidade("Cidade Inexistente"))
+                .isInstanceOf(ClimaNotFoundException.class)
+                .hasMessage("Previsão do dia não encontrada");
 
-        assertEquals("Previsão do dia não encontrada", exception.getMessage());
         verify(service).buscarPrevisaoDoDiaPorCidade("Cidade Inexistente");
     }
 
@@ -296,11 +301,12 @@ public class ClimaControllerTest {
     void deveRetornarNotFoundQuandoListarClimasPorCidadeInexistente() {
         Pageable pageable = PageRequest.of(0, 6, Sort.by("data").descending());
         when(service.buscarClimasPorCidade("Cidade Inexistente", pageable))
-                .thenThrow(new RuntimeException("Nenhum clima encontrado"));
+                .thenThrow(new ClimaNotFoundException("Nenhum clima encontrado"));
 
-        RuntimeException exception = assertThrows(RuntimeException.class, () -> controller.listarClimasPorCidade("Cidade Inexistente", pageable));
+        assertThatThrownBy(() -> controller.listarClimasPorCidade("Cidade Inexistente", pageable))
+                .isInstanceOf(ClimaNotFoundException.class)
+                .hasMessage("Nenhum clima encontrado");
 
-        assertEquals("Nenhum clima encontrado", exception.getMessage());
         verify(service).buscarClimasPorCidade("Cidade Inexistente", pageable);
     }
 
@@ -308,22 +314,24 @@ public class ClimaControllerTest {
     void deveRetornarNotFoundQuandoListarClimas() {
         Pageable pageable = PageRequest.of(0, 8, Sort.by("data").descending());
         when(service.listarClimas(pageable))
-                .thenThrow(new RuntimeException("Nenhum clima encontrado"));
+                .thenThrow(new ClimaNotFoundException("Nenhum clima encontrado"));
 
-        RuntimeException exception = assertThrows(RuntimeException.class, () -> controller.listarClimas(pageable));
+        assertThatThrownBy(() -> controller.listarClimas(pageable))
+                .isInstanceOf(ClimaNotFoundException.class)
+                .hasMessage("Nenhum clima encontrado");
 
-        assertEquals("Nenhum clima encontrado", exception.getMessage());
         verify(service).listarClimas(pageable);
     }
 
     @Test
     void deveRetornarNotFoundQuandoBuscarClimaPorIdInexistente() {
         when(service.buscarClimaPorId(999L))
-                .thenThrow(new RuntimeException("Clima não encontrado"));
+                .thenThrow(new ClimaNotFoundException("Clima não encontrado"));
 
-        RuntimeException exception = assertThrows(RuntimeException.class, () -> controller.buscarClimaPorId(999L));
+        assertThatThrownBy(() -> controller.buscarClimaPorId(999L))
+                .isInstanceOf(ClimaNotFoundException.class)
+                .hasMessage("Clima não encontrado");
 
-        assertEquals("Clima não encontrado", exception.getMessage());
         verify(service).buscarClimaPorId(999L);
     }
 
@@ -342,21 +350,23 @@ public class ClimaControllerTest {
         );
 
         when(service.atualizarClima(999L, request))
-                .thenThrow(new RuntimeException("Clima não encontrado"));
+                .thenThrow(new ClimaNotFoundException("Clima não encontrado"));
 
-        RuntimeException exception = assertThrows(RuntimeException.class, () -> controller.atualizarClima(999L, request));
+        assertThatThrownBy(() -> controller.atualizarClima(999L, request))
+                .isInstanceOf(ClimaNotFoundException.class)
+                .hasMessage("Clima não encontrado");
 
-        assertEquals("Clima não encontrado", exception.getMessage());
         verify(service).atualizarClima(999L, request);
     }
 
     @Test
     void deveRetornarNotFoundQuandoDeletarClimaInexistente() {
-        doThrow(new RuntimeException("Clima não encontrado")).when(service).deletarClima(999L);
+        doThrow(new ClimaNotFoundException("Clima não encontrado")).when(service).deletarClima(999L);
 
-        RuntimeException exception = assertThrows(RuntimeException.class, () -> controller.deletarClima(999L));
+        assertThatThrownBy(() -> controller.deletarClima(999L))
+                .isInstanceOf(ClimaNotFoundException.class)
+                .hasMessage("Clima não encontrado");
 
-        assertEquals("Clima não encontrado", exception.getMessage());
         verify(service).deletarClima(999L);
     }
 
@@ -374,11 +384,12 @@ public class ClimaControllerTest {
                 10.0
         );
 
-        when(service.criarClima(request)).thenThrow(new RuntimeException("Registro duplicado"));
+        when(service.criarClima(request)).thenThrow(new DuplicidadeClimaException("Registro duplicado"));
 
-        RuntimeException exception = assertThrows(RuntimeException.class, () -> controller.criarClima(request));
+        assertThatThrownBy(() -> controller.criarClima(request))
+                .isInstanceOf(DuplicidadeClimaException.class)
+                .hasMessage("Registro duplicado");
 
-        assertEquals("Registro duplicado", exception.getMessage());
         verify(service).criarClima(request);
     }
 }

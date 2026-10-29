@@ -12,9 +12,11 @@ import java.time.LocalDate;
 @Setter
 @NoArgsConstructor
 @Table(
-        uniqueConstraints = @UniqueConstraint(
-                columnNames = {"nome_cidade", "data"}
-        ))
+        name = "clima",
+        uniqueConstraints = {
+                @UniqueConstraint(columnNames = {"nome_cidade", "data"})
+        }
+)
 @Entity
 public class Clima {
 
